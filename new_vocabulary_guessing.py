@@ -1,13 +1,9 @@
 import random
 import vocabulary
-import os
 
-# words = ('python','jumble','easy','difficult','answer','continue','phone','position','game')
-# w = list(words)
 
 words,words_dic = vocabulary.get_vocabulary()
-w = words.copy()
-words_freq = {word:0 for word in words}
+
 
 def check (origin, new):
     a = len(origin)
@@ -18,27 +14,39 @@ def check (origin, new):
     similarity = b/a
     return similarity
 
-#生词存档
-if os.path.exists('save.txt'):
-    f = open('save.txt','a')
-else:
-    f = open('save.txt','w')
-    f.close()
-    f = open('save.txt','a')
 
+words_list = []
+f = open('save.txt','r')
+lines = f.readlines()
+f.close()
+for line in lines:
+    line = line.strip('\n')
+    if line in words_list:
+        continue
+    else:
+        words_list.append(line)
+
+#remove duplicate words and save again
+f = open('save.txt','w')
+for i in range(len(words_list)):
+    f.write(words_list[i]+'\n')
+f.close()
+
+
+w = words_list.copy()
+words_freq = {word:0 for word in words_list}
+
+# guessing part
 iscontinue = 'y'
-
 while iscontinue == 'y' or iscontinue == 'Y':
     if len(w) == 0:
-        w = words.copy()
+        w = words_list.copy()
     wd = random.choice(w)
     w.remove(wd)
     words_freq[wd]+=1
-    correct_wd = wd 
-    
-    '''
-    考虑原单词的情况
-    '''
+    correct_wd = wd
+
+
     while True:
         a = ''
         while wd:
@@ -49,7 +57,7 @@ while iscontinue == 'y' or iscontinue == 'Y':
         wd = correct_wd
         if b < 0.2:
             break
-    print('\n After shuffling: ', a)
+    print('\n After shuffling: ', a) 
 
     #3次机会
 
@@ -74,9 +82,6 @@ while iscontinue == 'y' or iscontinue == 'Y':
         print('\n Correct answer is :', correct_wd)
         print('\n The meaning of the vocabulary is ')
         print(words_dic[correct_wd])
-        f.write(correct_wd+'\n')
-        f.close()
-
 
     iscontinue = input('\n Do you want to continue? (Y/N): ')
     while True:
@@ -84,3 +89,4 @@ while iscontinue == 'y' or iscontinue == 'Y':
             break
         else:
             iscontinue = input ('\n please type "Y" or "N":  ')
+
